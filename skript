@@ -1,0 +1,1131 @@
+options:
+	wersja:1.0
+	logs:false
+on load:
+	set {_online} to result of connect to "https://raw.githubusercontent.com/Nizaxx/-SK-PremiumItems/master/version"
+	if "{@wersja}" is "%{_online}%":
+		stop
+	{_online} is " " or "":
+		stop
+	send "&4[PremiumItems]&c DOSTEPNA JEST NOWA WERSJA SKRYPTU! (/preitem update)" to console
+	stop
+
+options:
+	czas_wydania_po_smierci: 3 hours
+	czas_wydania_po_naprawie: 1 hour
+	czas_chowania_preitemu: 15 seconds
+	kapala_ilosc_zabic_potrzebna_do_wskrzeszenia: 30
+	
+	
+	miecz: glowing diamond sword named "&b&lThe Creeper Legend" with lore "&6&oWykuto na nim imie ""%arg-3%""||&c  - 1,5%% szans na mocne odepchniecie przeciwnika||&c  - co 10 obrazenie wzmaga sie||&c   w tobie sila na 6 sekund||&c  - po zabiciu ""diaxa"" otrzymasz dodatkowe||&c   20pkt zycia na minute||&c  - po zabiciu 3 graczy w ciagu 15 sekund||&c   twoj miecz wlada piorunami||&c  - po twojej smierci z tym mieczem kazdemu||&c   wookolo pomiesza sie w glowie po czym splona||&c  - 5%% szans na tryb ucieczki gdy masz||&c   mniej niz 5 serc||&c  - niektore ciosy wbijaja przeciwnika w ziemie||||&9TOTAL: 14 Attack Damage||||&9+7 BONUS Attack Damage"
+	luk: bow of infinity 5 named "&2&lRubin Chud" with lore "&6&oImie znalazcy to %arg-3%||&c  - po 15 celnych strzalach uwalnia sie||&c   magiczny pocisk||&c  - po zabiciu 4 graczy w ciagu||&c   30 sekund aktywuje sie furia||&c  - po 5 strzalach w bezruchu||&c   twoje nastepne strzaly zaczna sie palic||&c  - pod komenda /preluk wiadomosc mozesz||&c   wystrzelic wiadomosc tam gdzie opadnie strzala||&c  - nieskonczonnosc strzal, gdy nie masz||&c   strzaly luk Ci 1 dodaje"
+	kosa: glowing gold hoe named "&7&lKosa smierci" with lore "&6&o%arg-3% - tak, to ten ktory oszukal ""smierc""||&c  - od 4%% do 6%%  szans na oslepienie przeciwnika||&c  - 1%% szans na rzucenie zaklecia FATUM||&c  - 0,20%% szans na znikniecie na 40 sekund||&c  - po smierci mozesz otrzymac druga szanse||||&9+13,65 Attack Damage"
+	miecz_me: glowing diamond sword named "&b&lThe Creeper Legend" with lore "&6&oWykuto na nim imie ""%player%""||&c  - 1,5%% szans na mocne odepchniecie przeciwnika||&c  - co 10 obrazenie wzmaga sie||&c   w tobie sila na 6 sekund||&c  - po zabiciu ""diaxa"" otrzymasz dodatkowe||&c   20pkt zycia na minute||&c  - po zabiciu 3 graczy w ciagu 15 sekund||&c   twoj miecz wlada piorunami||&c  - po twojej smierci z tym mieczem kazdemu||&c   wookolo pomiesza sie w glowie po czym splona||&c  - 5%% szans na tryb ucieczki gdy masz||&c   mniej niz 5 serc||&c  - niektore ciosy wbijaja przeciwnika w ziemie||||&9TOTAL: 14 Attack Damage||||&9+7 BONUS Attack Damage"
+	luk_me: bow of infinity 5 named "&2&lRubin Chud" with lore "&6&oImie znalazcy to %player%||&c  - po 15 celnych strzalach uwalnia sie||&c   magiczny pocisk||&c  - po zabiciu 4 graczy w ciagu||&c   30 sekund aktywuje sie furia||&c  - po 5 strzalach w bezruchu||&c   twoje nastepne strzaly zaczna sie palic||&c  - pod komenda /preluk wiadomosc mozesz||&c   wystrzelic wiadomosc tam gdzie opadnie strzala||&c  - nieskonczonnosc strzal, gdy nie masz||&c   strzaly luk Ci 1 dodaje"
+	kosa_me: glowing gold hoe named "&7&lKosa smierci" with lore "&6&o%player% - tak, to ten ktory oszukal ""smierc""||&c  - od 4%% do 6%%  szans na oslepienie przeciwnika||&c  - 1%% szans na rzucenie zaklecia FATUM||&c  - 0,20%% szans na znikniecie na 40 sekund||&c  - po smierci mozesz otrzymac druga szanse||||&9+13,65 Attack Damage"
+command /premiumitems [<text>] [<text>] [<offline player>]:
+	aliases: preitem, premiumitem
+	trigger:
+		executor is player:
+			arg 1 is "clear":
+				clear {preitem.do_odbioru.%player%::*}
+				clear {preitem.kapala.%player%::*}
+			arg 1 is "odbierz":
+				{preitem.do_odbioru.%player%::*} is not set:
+					send "&4Lista itemow do odbioru jest pusta!"
+					stop
+				loop {preitem.do_odbioru.%player%::*}:
+					"%loop-value%" is "kask_gorniczy":
+						player doesn't have space for {preitem.do_odbioru.%player%::kask_gorniczy}:
+							send "&4Nie masz miejsca w inwentarzu!"
+							stop
+						add {preitem.do_odbioru.%player%::kask_gorniczy} to player's inventory
+						clear {preitem.do_odbioru.%player%::kask_gorniczy}
+						remove loop-value from {preitem.do_odbioru.%player%::*}
+						send "&a&l[&4SMS-SHOP&a&l]&2 Odebrano kask gorniczy."
+					"%loop-value%" is "kapala":
+						player doesn't have space for {preitem.do_odbioru.%player%::kapala}:
+							send "&4Nie masz miejsca w inwentarzu!"
+							stop
+						add {preitem.do_odbioru.%player%::kapala} to player's inventory
+						clear {preitem.do_odbioru.%player%::kapala}
+						remove loop-value from {preitem.do_odbioru.%player%::*}
+						send "&a&l[&4SMS-SHOP&a&l]&2 Odebrano kapale."
+				stop
+			send "&e&l========&6Premium Items&e&l========"
+			send "&6Skrypt ten dodaje itemki o specjalnych wlasciwosciach (m.in. miecz, luk, kapala i wiele innych). Autorem tego skryptu jest Nizax."
+			send "&e&l========================"
+			stop
+		arg 1 is not set:
+			send "&4[PremiumItems]&c Komenda nie pelna - /preitem <give;take;info>"
+			stop
+		arg 1 is "update":
+			execute console command "skript disable %script%"
+			download "xxx" to "plugins/Skript/scripts/%script%"
+			send "&4[PremiumItems]&a Zaktualizowano."
+			stop
+		arg 1 is "give":
+			arg 2 is not set:
+				send "&4[PremiumItems]&c Komenda nie pelna - /preitem give <kosa;miecz;luk;repair_points;kask_gorniczy> <nick>"
+				stop
+			arg 2 is "kosa":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem give kosa <nick>"
+					stop
+				"%{preitem.magazynek_%arg-3%::*}%" contains "kosa":
+					"{@logs}" is "true":
+						log "%arg-3% kupil ponownie kose" to "PremiumItems.log"
+					set {preitem.magazynek_%arg-3%::kosa::item} to {@kosa}
+					set {preitem.magazynek_%arg-3%::kosa::status} to "server"
+					send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono specjalna kose. Wiecej info pod &o/prekosa" to arg-3 
+					arg-3 is online:
+						remove golden hoe of Infinity 69 from arg-3's inventory
+						stop
+					add golden hoe of Infinity 69 to {preitem.take_%arg-3%::*}
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% kupil kose" to "PremiumItems.log"
+				add "kosa" to {preitem.magazynek_%arg-3%::*}
+				add "item" to {preitem.magazynek_%arg-3%::kosa::*}
+				add "status" to {preitem.magazynek_%arg-3%::kosa::*}
+				add "hitdmg" to {preitem.kosa_%arg-3%::*}
+				add "deadloc" to {preitem.kosa_%arg-3%::*}
+				add "invisibility" to {preitem.kosa_%arg-3%::*}
+				set {preitem.magazynek_%arg-3%::kosa::item} to {@kosa}
+				set {preitem.magazynek_%arg-3%::kosa::status} to "server"
+				set {preitem.repair_points.%arg-3%} to 0
+				send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono specjalna kose. Wiecej info pod &o/prekosa" to arg-3 
+				stop
+			arg 2 is "miecz":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem give miecz <nick>"
+					stop
+				"%{preitem.magazynek_%arg-3%::*}%" contains "miecz":
+					"{@logs}" is "true":
+						log "%arg-3% kupil ponownie miecz" to "PremiumItems.log"
+					set {preitem.magazynek_%arg-3%::miecz::item} to {@miecz}
+					set {preitem.magazynek_%arg-3%::miecz::status} to "server"
+					send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono legendarny miecz. Wiecej info pod &o/premiecz" to arg-3
+					arg-3 is online:
+						remove diamond sword of Infinity 69 from arg-3's inventory
+						stop
+					add diamond sword of Infinity 69 to {preitem.take_%arg-3%::*}
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% kupil miecz" to "PremiumItems.log"
+				add "miecz" to {preitem.magazynek_%arg-3%::*}
+				add "item" to {preitem.magazynek_%arg-3%::miecz::*}
+				add "status" to {preitem.magazynek_%arg-3%::miecz::*}
+				add "victim" to {preitem.miecz_%arg-3%::*}
+				add "zabici" to {preitem.miecz_%arg-3%::*}
+				add "superdmg" to {preitem.miecz_%arg-3%::*}
+				add "diaxvictim" to {preitem.miecz_%arg-3%::*}
+				add "ucieczka" to {preitem.miecz_%arg-3%::*}
+				add "hit_given" to {preitem.miecz_%arg-3%::*}
+				add "hit_taken" to {preitem.miecz_%arg-3%::*}
+				set {preitem.magazynek_%arg-3%::miecz::item} to {@miecz}
+				set {preitem.magazynek_%arg-3%::miecz::status} to "server"
+				set {preitem.repair_points.%arg-3%} to 0
+				send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono legendarny miecz. Wiecej info pod &o/premiecz" to arg-3 
+				stop
+			arg 2 is "luk":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem give luk <nick>"
+					stop
+				"%{preitem.magazynek_%arg-3%::*}%" contains "luk":
+					"{@logs}" is "true":
+						log "%arg-3% kupil ponownie luk" to "PremiumItems.log"
+					set {preitem.magazynek_%arg-3%::luk::item} to {@luk}
+					set {preitem.magazynek_%arg-3%::luk::status} to "server"
+					send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono jakis luk. Wiecej info pod &o/preluk" to arg-3
+					arg-3 is online:
+						remove bow of Infinity 5 from arg-3's inventory
+						stop
+					add bow of Infinity 5 to {preitem.take_%arg-3%::*}
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% kupil luk" to "PremiumItems.log"
+				add "luk" to {preitem.magazynek_%arg-3%::*}
+				add "item" to {preitem.magazynek_%arg-3%::luk::*}
+				add "status" to {preitem.magazynek_%arg-3%::luk::*}
+				add "wiadomosc" to {preitem.luk_%arg-3%::*}
+				add "lastshoot" to {preitem.luk_%arg-3%::*}
+				add "fireball" to {preitem.luk_%arg-3%::*}
+				add "ignitearrow" to {preitem.luk_%arg-3%::*}
+				add "shootloc" to {preitem.luk_%arg-3%::*}
+				add "furia" to {preitem.luk_%arg-3%::*}
+				add "furia_mode" to {preitem.luk_%arg-3%::*}
+				add "victim" to {preitem.luk_%arg-3%::*}
+				set {preitem.magazynek_%arg-3%::luk::item} to {@luk}
+				set {preitem.magazynek_%arg-3%::luk::status} to "server"
+				set {preitem.repair_points.%arg-3%} to 0
+				send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono jakis luk. Wiecej info pod &o/preluk" to arg-3 
+				stop
+			arg 2 is "repair_point" or "repair_points":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem give repair_points <nick>"
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% kupil 1 punkt naprawy" to "PremiumItems.log"
+				add 1 to {preitem.repair_points.%arg-3%}
+				send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono 1 pkt naprawy. Wiecej info pod &o/preluk;premiecz;prekosa napraw" to arg-3
+				stop
+			arg 2 is "kask_gorniczy":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem give kask_gorniczy <nick>"
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% kupil kask gorniczy" to "PremiumItems.log"
+				add "kask_gorniczy" to {preitem.do_odbioru.%arg-3%::*}
+				set {preitem.do_odbioru.%arg-3%::kask_gorniczy} to glowing iron helmet named "&dKask gorniczy"
+				send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono kask gorniczy. Aby go odebrac wpisz &o/preitem odbierz" to arg-3
+				stop
+			arg 2 is "kapala":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem give kapala <nick>"
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% kupil kapale" to "PremiumItems.log"
+				"%{preitem.kapala.%arg-3%::*}%" contains "dead":
+					add "kapala" to {preitem.do_odbioru.%arg-3%::*}
+					set {preitem.do_odbioru.%arg-3%::kapala} to glowing skeleton head named "&dKapala" with lore "&5Nakarm mnie krwia wrogow, a dam Ci zycie wieczne!||&8UWAGA! Posiadajac kapale bijesz sie slabiej!"
+					send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono kapale. Aby ja odebrac wpisz &o/preitem odbierz" to arg-3
+					stop
+				add "dead" to {preitem.kapala.%arg-3%::*}
+				add "zabici" to {preitem.kapala.%arg-3%::*}
+				set {preitem.kapala.%arg-3%::zabici} to 0
+				add "wskrzesz" to {preitem.kapala.%arg-3%::*}
+				add "victim" to {preitem.kapala.%arg-3%::*}
+				add "kapala" to {preitem.do_odbioru.%arg-3%::*}
+				set {preitem.do_odbioru.%arg-3%::kapala} to glowing skeleton head named "&dKapala" with lore "&5Nakarm mnie krwia wrogow, a dam Ci zycie wieczne!||&8UWAGA! Posiadajac kapale bijesz sie slabiej!"
+				send "&a&l[&4SMS-SHOP&a&l]&2 Zakupiono kapale. Aby ja odebrac wpisz &o/preitem odbierz" to arg-3
+				stop
+			send "&4[PremiumItems]&c Komenda zle uzupelniona - /preitem give &n%arg-2%?"
+			stop
+		arg 1 is "take":
+			arg 2 is not set:
+				send "&4[PremiumItems]&c Komenda nie pelna - /preitem take <kosa;miecz;luk;repair_point> <nick>"
+				stop
+			arg 2 is "kosa":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem take kosa <nick>"
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% stracil kose (/preitem take)" to "PremiumItems.log"
+				clear {preitem.magazynek_%arg-3%::kosa::item}
+				clear {preitem.magazynek_%arg-3%::kosa::status}
+				remove "item" from {preitem.magazynek_%arg-3%::kosa::*}
+				remove "status" from {preitem.magazynek_%arg-3%::kosa::*}
+				remove "kosa" from {preitem.magazynek_%arg-3%::*}
+				send "&4[PremiumItems]&a Komenda zostala wykonana pomyslnie."
+				arg-3 is online:
+					remove golden hoe of Infinity 69 from arg-3's inventory
+					stop
+				add golden hoe of Infinity 69 to {preitem.take_%arg-3%::*}
+				stop
+			arg 2 is "miecz":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem take miecz <nick>"
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% stracil miecz (/preitem take)" to "PremiumItems.log"
+				clear {preitem.magazynek_%arg-3%::miecz::item}
+				clear {preitem.magazynek_%arg-3%::miecz::status}
+				remove "item" from {preitem.magazynek_%arg-3%::miecz::*}
+				remove "status" from {preitem.magazynek_%arg-3%::miecz::*}
+				remove "miecz" from {preitem.magazynek_%arg-3%::*}
+				send "&4[PremiumItems]&a Komenda zostala wykonana pomyslnie."
+				arg-3 is online:
+					remove diamond sword of Infinity 69 from arg-3's inventory
+					stop
+				add diamond sword of Infinity 69 to {preitem.take_%arg-3%::*}
+				stop
+			arg 2 is "luk":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem take luk <nick>"
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% stracil luk (/preitem take)" to "PremiumItems.log"
+				clear {preitem.magazynek_%arg-3%::luk::item}
+				clear {preitem.magazynek_%arg-3%::luk::status}
+				remove "item" from {preitem.magazynek_%arg-3%::luk::*}
+				remove "status" from {preitem.magazynek_%arg-3%::luk::*}
+				remove "luk" from {preitem.magazynek_%arg-3%::*}
+				remove "wiadomosc" from {preitem.luk_%arg-3%::*}
+				remove "lastshoot" from {preitem.luk_%arg-3%::*}
+				remove "fireball" from {preitem.luk_%arg-3%::*}
+				remove "ignitearrow" from {preitem.luk_%arg-3%::*}
+				remove "shootloc" from {preitem.luk_%arg-3%::*}
+				remove "furia" from {preitem.luk_%arg-3%::*}
+				remove "furia_mode" from {preitem.luk_%arg-3%::*}
+				remove "victim" from {preitem.luk_%arg-3%::*}
+				send "&4[PremiumItems]&a Komenda zostala wykonana pomyslnie."
+				arg-3 is online:
+					remove bow of Infinity 5 from arg-3's inventory
+					stop
+				add bow of Infinity 5 to {preitem.take_%arg-3%::*}
+				stop
+			arg 2 is "repair_point" or "repair_points":
+				arg 3 is not set:
+					send "&4[PremiumItems]&c Komenda nie pelna - /preitem take repair_points <nick>"
+					stop
+				{preitem.repair_points.%arg-3%} <= 0:
+					send "&4[PremiumItems]&c Komenda nie moze zostac wykonana - /preitem take repair_points %arg-3% poniewaz gracz posiada mniej niz 0 pkt napraw"
+					stop
+				"{@logs}" is "true":
+					log "%arg-3% stracil 1 punkt naprawy (/preitem take)" to "PremiumItems.log"
+				remove 1 from {preitem.repair_points.%arg-3%}
+				send "&4[PremiumItems]&a Komenda zostala wykonana pomyslnie - nowy stan pkt %arg-3% to %{preitem.repair_points.%arg-3%}%"
+				stop
+			send "&4[PremiumItems]&c Komenda zle uzupelniona - /preitem take &n%arg-2%?"
+			stop
+		arg 1 is "info":
+			send "&e&l========&6Premium Items&e&l========"
+			send "&6Skrypt ten dodaje itemki o specjalnych wlasciwosciach (m.in. miecz, luk, kapala i wiele innych). Autorem tego skryptu jest Nizax."
+			send "&e&l========================"
+			stop
+		send "&4[PremiumItems]&c Komenda zle uzupelniona - /preitem &n%arg-1%?"
+		stop
+
+command /preluk [<text>] [<text>]:
+	trigger:
+		"%{preitem.magazynek_%player%::*}%" contains "luk":
+			arg 1 is not set:
+				send "&e&l========&2&lRubin Chud&e&l========"
+				send "&6/preluk wydaj&e dodaje do inwentarza luk"
+				send "&6/preluk schowaj&e chowa luk do chmury"
+				send "&6/preluk napraw&e naprawia calkowicie luk"
+				send "&6/preluk wiadomosc <tresc>&e wysylanie wiadomosci strzala"
+				send "&6/preluk info&e informacje o skrypcie"
+				send "&e&l======================"
+				stop
+			arg 1 is "wydaj":
+				{preitem.magazynek_%player%::luk::status} is "player":
+					send "&4Niestety, mamy w zapasie tylko jeden luk ;\"
+					stop
+				player doesn't have space for {preitem.magazynek_%player%::luk::item}:
+					send "&4Nie masz miejsca w inwentarzu!"
+					stop
+				loop {preitem.timer4wydaj.%player%::*}:
+					{preitem.timer4wydaj.%player%::%loop-value%} is set
+					set {_timedelay} to difference between {preitem.timer4wydaj.%player%::%loop-value%} and now
+					"%loop-value%" is "smierc_luk":
+						{_timedelay} <= {@czas_wydania_po_smierci}
+						set {_hasbeenfor} to {@czas_wydania_po_smierci}
+						send "&4Od czasu kiedy zgineles rozpoczely sie poszukiwania twojego luku. &cMoze to potrwac nawet {@czas_wydania_po_smierci}!"
+						stop
+					"%loop-value%" is "naprawa_luk":
+						{_timedelay} <= {@czas_wydania_po_naprawie}
+						set {_hasbeenfor} to {@czas_wydania_po_naprawie}
+						remove {_timedelay} from {_hasbeenfor}
+						send "&4Luk bedzie gotowy za %{_hasbeenfor}%."
+						stop
+					clear {preitem.timer4wydaj.%player%::%loop-value%}
+					remove loop-value from {preitem.timer4wydaj.%player%::*}
+				player has bow of Infinity 5:
+					remove every bow of Infinity 5 from player's inventory
+				give {preitem.magazynek_%player%::luk::item} to player
+				clear {preitem.magazynek_%player%::luk::item}
+				set {preitem.magazynek_%player%::luk::status} to "player"
+				send "&eWydano luk."
+				stop
+			arg 1 is "schowaj":
+				player doesn't have bow of Infinity 5:
+					send "&4Niestety nie mozesz schowac luku ktorego nie masz."
+					stop
+				loop all items in player's inventory:
+					loop-item is bow of Infinity 5
+					{preitem.location_schowaj.%player%} is set:
+						send "&4Czekaj, trwa chowanie..."
+						stop
+					send "&cZaczynasz chowac luk, nie ruszaj sie przez {@czas_chowania_preitemu}."
+					set {preitem.location_schowaj.%player%} to block at location of player
+					wait {@czas_chowania_preitemu}
+					{preitem.location_schowaj.%player%} is block at location of player:
+						clear {preitem.location_schowaj.%player%}
+						set {preitem.magazynek_%player%::luk::item} to loop-item
+						remove loop-item from player's inventory
+						set {preitem.magazynek_%player%::luk::status} to "server"
+						{preitem.luk_%player%.arrow} is true:
+							remove 1 arrow from player's inventory
+							clear {preitem.luk_%player%.arrow}
+						send "&eSchowano luk."
+						stop
+					clear {preitem.location_schowaj.%player%}
+					send "&4Ruszyles sie, nie zdarzyles schowac luku."
+					stop
+				send "&4&lBLAD! Zrob SS i zglos to dla administratora!"
+				stop
+			arg 1 is "napraw":
+				{preitem.magazynek_%player%::luk::status} is "player":
+					send "&4Schowaj luk do chmury, aby go naprawic &o/preluk schowaj"
+					stop
+				{preitem.repair_points.%player%} <= 0:
+					send "&4Nie mozesz naprawic swojego luku, poniewaz masz %{preitem.repair_points.%player%}% pkt naprawy. Aby takowe punkty zdobyc wystarczy odwiedzic SMS-SHOP na naszym forum."
+					stop
+				{preitem.timer4wydaj.%player%::smierc_luk} is set:
+					send "&4Nie mozna naprawic luku ktorego nie ma w chmurze :\"
+					stop
+				remove 1 from {preitem.repair_points.%player%}
+				set {preitem.magazynek_%player%::luk::item} to {@luk_me}
+				set {preitem.magazynek_%player%::luk::status} to "server"
+				add "naprawa_luk" to {preitem.timer4wydaj.%player%::*}
+				set {preitem.timer4wydaj.%player%::naprawa_luk} to now
+				send "&eTwoj luk bedzie gotowy za godzinke."
+				stop
+			arg 1 is "wiadomosc":
+				arg 2 is not set:
+					send "&4Wpisz tresc wiadomosci, ktora chcesz przypisac do strzaly."
+					stop
+				set {preitem.luk_%player%::wiadomosc} to "%arg 2%"
+				send "&eTeraz strzel w to miejsce, gdzie ma sie pojawic tekst."
+				stop
+			arg 1 is "info":
+				send "&e&l========&6Premium Items&e&l========"
+				send "&6Skrypt ten dodaje itemki o specjalnych wlasciwosciach (m.in. miecz, luk, kapala i wiele innych). Autorem tego skryptu jest Nizax."
+				send "&e&l========================"
+				stop
+			send "&4Niepoprawna komenda."
+			stop
+		send "&4Niestety nie masz luku ""Rubin Chud"", aby moc uzyc tej komendy. Luk ten juz do kupienia w SMS-SHOP na naszym forum."
+		stop
+command /premiecz [<text>]:
+	trigger:
+		"%{preitem.magazynek_%player%::*}%" contains "miecz":
+			arg 1 is not set:
+				send "&e&l========&b&lThe Creeper Legend&e&l========"
+				send "&6/premiecz wydaj&e dodaje do inwentarza miecz"
+				send "&6/premiecz schowaj&e chowa miecz do chmury"
+				send "&6/premiecz napraw&e naprawia calkowicie miecz"
+				send "&6/premiecz info&e informacje o skrypcie"
+				send "&e&l======================"
+				stop
+			arg 1 is "wydaj":
+				{preitem.magazynek_%player%::miecz::status} is "player":
+					send "&4Niestety, mamy w zapasie tylko jeden miecz ;\"
+					stop
+				player doesn't have space for {preitem.magazynek_%player%::miecz::item}:
+					send "&4Nie masz miejsca w inwentarzu!"
+					stop
+				loop {preitem.timer4wydaj.%player%::*}:
+					{preitem.timer4wydaj.%player%::%loop-value%} is set
+					set {_timedelay} to difference between {preitem.timer4wydaj.%player%::%loop-value%} and now
+					"%loop-value%" is "smierc_miecz":
+						{_timedelay} <= {@czas_wydania_po_smierci}
+						set {_hasbeenfor} to {@czas_wydania_po_smierci}
+						send "&4Od czasu kiedy zgineles rozpoczely sie poszukiwania twojego miecza. &cMoze to potrwac nawet {@czas_wydania_po_smierci}!"
+						stop
+					"%loop-value%" is "naprawa_miecz":
+						{_timedelay} <= {@czas_wydania_po_naprawie}
+						set {_hasbeenfor} to {@czas_wydania_po_naprawie}
+						remove {_timedelay} from {_hasbeenfor}
+						send "&4Miecz bedzie gotowy za %{_hasbeenfor}%."
+						stop
+					clear {preitem.timer4wydaj.%player%::%loop-value%}
+					remove loop-value from {preitem.timer4wydaj.%player%::*}
+				player has diamond sword of Infinity 69:
+					remove every diamond sword of Infinity 69 from player's inventory
+				give {preitem.magazynek_%player%::miecz::item} to player
+				clear {preitem.magazynek_%player%::miecz::item}
+				set {preitem.magazynek_%player%::miecz::status} to "player"
+				send "&eWydano miecz."
+				stop
+			arg 1 is "schowaj":
+				player doesn't have diamond sword of Infinity 69:
+					send "&4Niestety nie mozesz schowac miecz ktorego nie masz."
+					stop
+				loop all items in player's inventory:
+					loop-item is diamond sword of Infinity 69
+					{preitem.location_schowaj.%player%} is set:
+						send "&4Czekaj, trwa chowanie..."
+						stop
+					send "&cZaczynasz chowac miecz, nie ruszaj sie przez {@czas_chowania_preitemu}."
+					set {preitem.location_schowaj.%player%} to block at location of player
+					wait {@czas_chowania_preitemu}
+					{preitem.location_schowaj.%player%} is block at location of player:
+						clear {preitem.location_schowaj.%player%}
+						set {preitem.magazynek_%player%::miecz::item} to loop-item
+						remove loop-item from player's inventory
+						set {preitem.magazynek_%player%::miecz::status} to "server"
+						send "&eSchowano miecz."
+						stop
+					clear {preitem.location_schowaj.%player%}
+					send "&4Ruszyles sie, nie zdarzyles schowac miecza."
+					stop
+				send "&4&lBLAD! Zrob SS i zglos to dla administratora!"
+				stop
+			arg 1 is "napraw":
+				{preitem.magazynek_%player%::miecz::status} is "player":
+					send "&4Schowaj miecz do chmury, aby go naprawic &o/premiecz schowaj"
+					stop
+				{preitem.repair_points.%player%} <= 0:
+					send "&4Nie mozesz naprawic swojego miecz, poniewaz masz %{preitem.repair_points.%player%}% pkt naprawy. Aby takowe punkty zdobyc wystarczy odwiedzic SMS-SHOP na naszym forum."
+					stop
+				{preitem.timer4wydaj.%player%::smierc_miecz} is set:
+					send "&4Nie mozna naprawic miecz ktorego nie ma w chmurze :\"
+					stop
+				remove 1 from {preitem.repair_points.%player%}
+				set {preitem.magazynek_%player%::miecz::item} to {@miecz_me}
+				set {preitem.magazynek_%player%::miecz::status} to "server"
+				add "naprawa_miecz" to {preitem.timer4wydaj.%player%::*}
+				set {preitem.timer4wydaj.%player%::naprawa_miecz} to now
+				send "&eTwoj miecz bedzie gotowy za godzinke."
+				stop
+			arg 1 is "info":
+				send "&e&l========&6Premium Items&e&l========"
+				send "&6Skrypt ten dodaje itemki o specjalnych wlasciwosciach (m.in. miecz, luk, kapala i wiele innych). Autorem tego skryptu jest Nizax."
+				send "&e&l========================"
+				stop
+			send "&4Niepoprawna komenda."
+			stop
+		send "&4Niestety nie masz miecza ""The Creeper Legend"", aby moc uzyc tej komendy. Miecz ten juz do kupienia w SMS-SHOP na naszym forum."
+		stop
+command /prekosa [<text>]:
+	trigger:
+		"%{preitem.magazynek_%player%::*}%" contains "kosa":
+			arg 1 is not set:
+				send "&e&l========&7&lKosa smierci&e&l========"
+				send "&6/prekosa wydaj&e dodaje do inwentarza kose"
+				send "&6/prekosa schowaj&e chowa kose do chmury"
+				send "&6/prekosa napraw&e naprawia calkowicie kose"
+				send "&6/prekosa info&e informacje o skrypcie"
+				send "&e&l======================"
+				stop
+			arg 1 is "wydaj":
+				{preitem.magazynek_%player%::kosa::status} is "player":
+					send "&4Niestety, mamy w zapasie tylko jedena kose ;\"
+					stop
+				player doesn't have space for {preitem.magazynek_%player%::kosa::item}:
+					send "&4Nie masz miejsca w inwentarzu!"
+					stop
+				loop {preitem.timer4wydaj.%player%::*}:
+					{preitem.timer4wydaj.%player%::%loop-value%} is set
+					set {_timedelay} to difference between {preitem.timer4wydaj.%player%::%loop-value%} and now
+					"%loop-value%" is "smierc_kosa":
+						{_timedelay} <= {@czas_wydania_po_smierci}
+						set {_hasbeenfor} to {@czas_wydania_po_smierci}
+						send "&4Od czasu kiedy zgineles rozpoczely sie poszukiwania twojej kosy. &cMoze to potrwac nawet {@czas_wydania_po_smierci}!"
+						stop
+					"%loop-value%" is "naprawa_kosa":
+						{_timedelay} <= {@czas_wydania_po_naprawie}
+						set {_hasbeenfor} to {@czas_wydania_po_naprawie}
+						remove {_timedelay} from {_hasbeenfor}
+						send "&4Kosa bedzie gotowa za %{_hasbeenfor}%."
+						stop
+					clear {preitem.timer4wydaj.%player%::%loop-value%}
+					remove loop-value from {preitem.timer4wydaj.%player%::*}
+				player has golden hoe of Infinity 69:
+					remove every golden hoe of Infinity 69 from player's inventory
+				give {preitem.magazynek_%player%::kosa::item} to player
+				clear {preitem.magazynek_%player%::kosa::item}
+				set {preitem.magazynek_%player%::kosa::status} to "player"
+				send "&eWydano kose."
+				stop
+			arg 1 is "schowaj":
+				player doesn't have golden hoe of Infinity 69:
+					send "&4Niestety nie mozesz schowac kosy ktorej nie masz."
+					stop
+				loop all items in player's inventory:
+					loop-item is golden hoe of Infinity 69
+					{preitem.location_schowaj.%player%} is set:
+						send "&4Czekaj, trwa chowanie..."
+						stop
+					send "&cZaczynasz chowac kose, nie ruszaj sie przez {@czas_chowania_preitemu}."
+					set {preitem.location_schowaj.%player%} to block at location of player
+					wait {@czas_chowania_preitemu}
+					{preitem.location_schowaj.%player%} is block at location of player:
+						clear {preitem.location_schowaj.%player%}
+						set {preitem.magazynek_%player%::kosa::item} to loop-item
+						remove loop-item from player's inventory
+						set {preitem.magazynek_%player%::kosa::status} to "server"
+						send "&eSchowano kose."
+						stop
+					clear {preitem.location_schowaj.%player%}
+					send "&4Ruszyles sie, nie zdarzyles schowac kosy."
+					stop
+				send "&4&lBLAD! Zrob SS i zglos to dla administratora!"
+				stop
+			arg 1 is "napraw":
+				{preitem.magazynek_%player%::kosa::status} is "player":
+					send "&4Schowaj kose do chmury, aby ja naprawic &o/prekosa schowaj"
+					stop
+				{preitem.repair_points.%player%} <= 0:
+					send "&4Nie mozesz naprawic swojej kosy, poniewaz masz %{preitem.repair_points.%player%}% pkt naprawy. Aby takowe punkty zdobyc wystarczy odwiedzic SMS-SHOP na naszym forum."
+					stop
+				{preitem.timer4wydaj.%player%::smierc_kosa} is set:
+					send "&4Nie mozna naprawic kosy ktorej nie ma w chmurze :\"
+					stop
+				remove 1 from {preitem.repair_points.%player%}
+				set {preitem.magazynek_%player%::kosa::item} to {@kosa_me}
+				set {preitem.magazynek_%player%::kosa::status} to "server"
+				add "naprawa_kosa" to {preitem.timer4wydaj.%player%::*}
+				set {preitem.timer4wydaj.%player%::naprawa_kosa} to now
+				send "&eTwoja kosa bedzie gotowa za godzinke."
+				stop
+			arg 1 is "info":
+				send "&e&l========&6Premium Items&e&l========"
+				send "&6Skrypt ten dodaje itemki o specjalnych wlasciwosciach (m.in. miecz, luk, kapala i wiele innych). Autorem tego skryptu jest Nizax."
+				send "&e&l========================"
+				stop
+			send "&4Niepoprawna komenda."
+			stop
+		send "&4Niestety nie masz kosy ""Kosa smierci"", aby moc uzyc tej komendy. Kosa ta juz do kupienia w SMS-SHOP na naszym forum."
+		stop
+	
+
+# Zabezpieczenia itemow itd...
+on drop diamond sword of Infinity 69:
+	cancel event
+	stop
+on drop golden hoe of Infinity 69:
+	cancel event
+	stop
+on drop bow of Infinity 5:
+	cancel event
+	stop
+on rightclick with golden hoe of Infinity 69:
+	cancel event
+	stop
+on rightclick on chest or trapped chest or furnace or dispenser or hopper or dropper or brewing stand or ender chest or anvil or enchantment table or workbench:
+	set {_nr} to 0
+	loop 40 times:
+		{preitem.luk_%player%.arrow} is true:
+			slot {_nr} of player is arrow
+			add {_nr} to {preitem.arrow_slot.%player%::*}
+		slot {_nr} of player is bow of Infinity 5:
+			event-block is anvil or enchantment table:
+				set {preitem.antyupgradeinfo.%player%} to true
+			set {preitem.bow_slot.%player%} to {_nr}
+		slot {_nr} of player is golden hoe of Infinity 69:
+			event-block is anvil or enchantment table:
+				set {preitem.antyupgradeinfo.%player%} to true
+			set {preitem.hoe_slot.%player%} to {_nr}
+		slot {_nr} of player is diamond sword of Infinity 69:
+			event-block is anvil or enchantment table:
+				set {preitem.antyupgradeinfo.%player%} to true
+			set {preitem.sword_slot.%player%} to {_nr}
+		slot {_nr} of player is skeleton head of Infinity 69:
+			clicked block is not ender chest
+			set {preitem.kapala_slot.%player%} to {_nr}
+		add 1 to {_nr}
+	stop
+on rightclick on horse:
+	set {_nr} to 0
+	loop 40 times:
+		{preitem.luk_%player%.arrow} is true:
+			close player's inventory
+		slot {_nr} of player is bow of Infinity 5:
+			close player's inventory
+		slot {_nr} of player is golden hoe of Infinity 69:
+			close player's inventory
+		slot {_nr} of player is diamond sword of Infinity 69:
+			close player's inventory
+		slot {_nr} of player is skeleton head of Infinity 69:
+			close player's inventory
+		add 1 to {_nr}
+	stop
+on inventory click:
+	clicked slot is {preitem.bow_slot.%player%} or {preitem.hoe_slot.%player%} or {preitem.sword_slot.%player%} or {preitem.arrow_slot.%player%::*} or {preitem.kapala_slot.%player%}
+	loop {preitem.arrow_slot.%player%::*}:
+		clear {preitem.arrow_slot.%player%::*}
+		remove 1 arrow from player's inventory
+		clear {preitem.luk_%player%.arrow}
+		stop
+	cancel event
+	close player's inventory
+	{preitem.antyupgradeinfo.%player%} is set:
+		send "&4Itemow premium nie da sie ulepszyc :\"
+		stop
+	{preitem.bow_slot.%player%} is set:
+		send "&4Uzyj komendy /preluk schowaj"
+	{preitem.hoe_slot.%player%} is set:
+		send "&4Uzyj komendy /prekosa schowaj"
+	{preitem.sword_slot.%player%} is set:
+		send "&4Uzyj komendy /premiecz schowaj"
+	{preitem.kapala_slot.%player%} is set:
+		send "&4Kapale mozna schowac tylko w ender chest"
+	stop
+on close inventory:
+	{preitem.bow_slot.%player%} is set:
+		set {_yes} to true
+	{preitem.hoe_slot.%player%} is set:
+		set {_yes} to true
+	{preitem.sword_slot.%player%} is set:
+		set {_yes} to true
+	{preitem.antyupgradeinfo.%player%} is set:
+		set {_yes} to true
+	{preitem.arrow_slot.%player%::*} is set:
+		set {_yes} to true
+	{preitem.kapala_slot.%player%} is set:
+		set {_yes} to true
+	{_yes} is true
+	wait 2 tick
+	clear {preitem.bow_slot.%player%}
+	clear {preitem.hoe_slot.%player%}
+	clear {preitem.sword_slot.%player%}
+	clear {preitem.antyupgradeinfo.%player%}
+	clear {preitem.arrow_slot.%player%::*}
+	clear {preitem.kapala_slot.%player%}
+	stop
+
+on login:
+	wait 5 seconds
+	loop {preitem.take_%player%::*}:
+		remove loop-value from player's inventory
+		remove loop-value from {preitem.take_%player%::*}
+	clear {preitem.take_%player%::*}
+	{preitem.do_odbioru.%player%::*} is set:
+		send "&a&l[&4SMS-SHOP&a&l]&2 Masz item do odbioru! Wpisz &o/preitem odbierz" to player
+	stop
+on disconnect:
+	wait 3 seconds
+	clear {preitem.location_schowaj.%player%}
+	stop
+on death of player:
+	{preitem.luk_%player%.arrow} is true:
+		remove 1 arrow from drops
+	loop items in player's inventory:
+		loop-item is diamond sword of Infinity 69:
+			set {preitem.magazynek_%player%::miecz::item} to loop-item
+			remove loop-item from drops
+			set {preitem.magazynek_%player%::miecz::status} to "server"
+			add "smierc_miecz" to {preitem.timer4wydaj.%player%::*}
+			set {preitem.timer4wydaj.%player%::smierc_miecz} to now
+			send "&eO nie!&6 Zgineles z legendarnym mieczem! Idziemy go szukac. Gdy skonczymy bedziesz mogl odebrac go &o/premiecz wydaj" to player
+		loop-item is golden hoe of Infinity 69:
+			set {preitem.magazynek_%player%::kosa::item} to loop-item
+			remove loop-item from drops
+			set {preitem.magazynek_%player%::kosa::status} to "server"
+			add "smierc_kosa" to {preitem.timer4wydaj.%player%::*}
+			set {preitem.timer4wydaj.%player%::smierc_kosa} to now
+			send "&eO nie!&6 Zgineles z kosa smierci! Idziemy go szukac. Gdy skonczymy bedziesz mogl odebrac go &o/prekosa wydaj" to player
+		loop-item is bow of Infinity 5:
+			set {preitem.magazynek_%player%::luk::item} to loop-item
+			remove loop-item from drops
+			set {preitem.magazynek_%player%::luk::status} to "server"
+			add "smierc_luk" to {preitem.timer4wydaj.%player%::*}
+			set {preitem.timer4wydaj.%player%::smierc_luk} to now
+			send "&eO nie!&6 Zgineles z tym lukiem! Idziemy go szukac. Gdy skonczymy bedziesz mogl odebrac go &o/preluk wydaj" to player
+	stop
+
+# Attack Damage	
+on damage:
+	attacker is player
+	"%attacker's tool%" is "golden hoe of Infinity 69 named ""&7&lKosa smierci""":
+		chance of 3.5%:
+			damage attacker's tool by 1
+		damage victim by 2 heart
+		victim is not player:
+			damage victim by 9.5 heart
+			stop
+		victim's chestplate is not armour
+		victim's leggings is not armour
+		victim's helmet is not armour
+		victim's boots is not armour
+		damage victim by 8.5 heart
+		display hologram "&4MARTWY!" at block below block at location of victim for 1 second
+		stop
+	"%attacker's tool%" is "diamond sword of Infinity 69 named ""&b&lThe Creeper Legend"""
+	chance of 10%:
+		push victim downwards at speed 0.5
+	damage victim by 3.75 hearts
+	victim is not player:
+		damage victim by 10 heart
+		stop
+	victim's chestplate is not armour
+	victim's leggings is not armour
+	victim's helmet is not armour
+	victim's boots is not armour
+	damage victim by 8.5 heart
+	display hologram "&4MARTWY!" at block below block at location of victim for 1 second
+	stop
+
+on rightclick with bow of Infinity 5:
+	"%player's tool%" is "bow of Infinity 5 named ""&2&lRubin Chud"""
+	{preitem.luk_%player%::furia_mode} is true:
+		make player shoot a arrow at speed 3 in player's direction
+		stop
+	player has arrow:
+		stop
+	set {preitem.luk_%player%.arrow} to true
+	add 1 arrow to player's inventory
+	wait 1 minute
+	{preitem.luk_%player%.arrow} is true
+	remove 1 arrow from player's inventory
+	clear {preitem.luk_%player%.arrow}
+	stop
+on drop arrow:
+	player has bow of Infinity 5
+	player has 1 arrow:
+		stop
+	{preitem.luk_%player%.arrow} is true
+	cancel event
+	stop
+on pickup arrow:
+	{preitem.luk_%player%.arrow} is true:
+		cancel event
+		stop
+	{preitem.luk_%player%::furia_mode} is true:
+		cancel event
+	stop
+on login:
+	{preitem.luk_%player%.arrow} is true
+	remove 1 arrow from player's inventory
+	clear {preitem.luk_%player%.arrow}
+	stop
+on death of player:
+	{preitem.luk_%player%.arrow} is true
+	remove 1 arrow from drops
+	clear {preitem.luk_%player%.arrow}
+	stop
+on shoot:
+	"%shooter's tool%" is "bow of Infinity 5 named ""&2&lRubin Chud"""
+	{preitem.luk_%shooter%::furia_mode} is not set
+	set {_locblock} to location of block at location of shooter
+	set {preitem.luk_%shooter%::lastshoot} to now
+	{preitem.luk_%shooter%::shootloc} is {_locblock}:
+		add 1 to {preitem.luk_%shooter%::ignitearrow}
+	{preitem.luk_%shooter%::shootloc} is not {_locblock}:
+		clear {preitem.luk_%shooter%::ignitearrow}
+	set {preitem.luk_%shooter%::shootloc} to {_locblock}
+	{preitem.luk_%shooter%::furia} >= 4:
+		set {preitem.luk_%shooter%::furia_mode} to true
+		clear {preitem.luk_%shooter%::furia}
+		broadcast "%amount of arrows in shooter's inventory% arrow"
+		set {_arrows} to "%amount of arrows in shooter's inventory% arrow" parsed as itemtype
+		wait 1 tick
+		remove {_arrows} from shooter's inventory
+		make shooter shoot a arrow at speed 3 in shooter's direction
+		send "&c&lWoohoow! FURIA!&c - czyli strzelaj ile wlezie ;)" to shooter
+		wait 25 seconds
+		clear {preitem.luk_%shooter%::furia_mode}
+		add {_arrows} to shooter's inventory
+		stop
+	{preitem.luk_%shooter%::ignitearrow} >= 5:
+		ignite projectile
+	{preitem.luk_%shooter%::fireball} >= 15:
+		cancel event
+		make shooter shoot a fireball at speed 5 in shooter's direction
+		clear {preitem.luk_%shooter%::fireball}
+	push projectile in shooter's direction at speed 5
+	shooter's targeted entity is not player:
+		stop
+	shooter's targeted entity's chestplate is armour
+	shooter's targeted entity's leggings is armour
+	shooter's targeted entity's helmet is armour
+	shooter's targeted entity's boots is armour
+	damage shooter's targeted entity by 1.2 hearts
+	stop
+
+#Specjalne moce pre-itemow.
+
+	#ŁUK:  [ustaw chance of 10% na damage player's tool i aby luk nie niszczyl sie za uzycie]
+
+on damage:
+	attacker is player
+	"%attacker's tool%" is "bow of Infinity 5 named ""&2&lRubin Chud"""
+	set {_dmgtim} to difference between {preitem.luk_%attacker%::lastshoot} and now
+	{_dmgtim} < 4 seconds
+	add 1 to {preitem.luk_%attacker%::fireball}
+	victim is player
+	set {preitem.luk_%attacker%::victim} to victim
+	set {preitem.luk_ofiara.%victim%} to attacker
+	wait 6 seconds
+	clear {preitem.luk_ofiara.%victim%}
+	{preitem.luk_%attacker%::victim} is victim
+	clear {preitem.luk_%attacker%::victim}
+	stop
+on death of player:
+	{preitem.luk_ofiara.%player%} is set
+	set {_attacker} to {preitem.luk_ofiara.%player%}
+	add 1 to {preitem.luk_%{_attacker}%::furia}
+	wait 30 seconds
+	remove 1 from {preitem.luk_%{_attacker}%::furia}
+	stop
+on projectile hit:
+	shooter is player
+	{preitem.luk_%shooter%::furia_mode} is true:
+		delete projectile
+		stop
+	projectile is fireball:
+		{preitem.luk_%shooter%::fireball} >= 15
+		create an explosion of force 4 at projectile
+	loop all entities in radius 1 around location of projectile:
+		set {_hit} to true
+	{_hit} is not set:
+		clear {preitem.luk_%shooter%::fireball}
+	{preitem.luk_%shooter%::wiadomosc} is set:
+		display hologram "%{preitem.luk_%shooter%::wiadomosc}%" at block below block at location of projectile for 5 seconds
+		clear {preitem.luk_%shooter%::wiadomosc}
+		stop
+	stop
+on disconnect:
+	{preitem.luk_%player%::*} is set
+	clear {preitem.luk_%player%::wiadomosc}
+	clear {preitem.luk_%player%::fireball}
+	stop
+
+
+	#KOSA:
+
+on damage:
+	"%attacker's tool%" is "golden hoe of Infinity 69 named ""&7&lKosa smierci"""
+	add 1 to {preitem.kosa_%attacker%::hitdmg}
+	{preitem.kosa_%attacker%::hitdmg} >= 30:
+		victim is player
+		chance of 30%:
+			apply blindness to victim for 15 seconds
+			apply night vision to victim for 17 seconds
+		clear {preitem.kosa_%attacker%::hitdmg}
+	chance of 3%:
+		set {_num} to random integer between 0.5 and 4
+		display hologram "&0FATUM!" at location of victim for 1.5 second
+		{_num} is 1:
+			apply slowness 32 to victim for 7 seconds
+		{_num} is 2:
+			push victim upwards at speed 1
+			wait 2 seconds
+			push victim upwards at speed 1
+			wait 4 seconds
+			push victim upwards at speed 1
+			wait 6 seconds
+			push victim upwards at speed 1
+			wait 8 seconds
+			push victim upwards at speed 1
+			wait 10 seconds
+			push victim upwards at speed 1
+			wait 11 seconds
+			push victim upwards at speed 1
+		{_num} is 3:
+			apply hunger 99 to victim for 10 seconds
+		{_num} is 4:
+			drop victim's tool at location of victim's head
+			clear victim's tool
+			wait 3 seconds
+			drop victim's tool at location of victim's head
+			clear victim's tool
+			wait 5 seconds
+			drop victim's tool at location of victim's head
+			clear victim's tool
+			wait 10 seconds
+			drop victim's tool at location of victim's head
+			clear victim's tool
+	stop
+on damage:
+	victim is player
+	victim has golden hoe of Infinity 69
+	chance of 1%:
+		set {_num} to 0
+		loop 40 times:
+			set {preitem.kosa-saveeq_%victim%::%{_num}%} to slot {_num} of victim
+			add 1 to {_num}
+		wait 20 seconds
+		clear {preitem.kosa-saveeq_%victim%::*}
+		stop
+	victim's health <= 5
+	chance of 5%:
+		set {preitem.kosa_%victim%::invisibility} to now
+		execute console command "vanish %victim%"
+		"{@logs}" is "true":
+			log "%victim% otrzymal niewidzialnosc z komendy /vanish przy pomocy ""Kosy Smierci""" to "PremiumItems-vanished.log"
+		send "&4&l[&cPreKosa&4&l]&6 Niewidzialnosc + niesmiertelnosc na 40 sekund!" to victim
+		wait 40 seconds
+		victim is online
+		clear {preitem.kosa_%victim%::invisibility}
+		execute console command "vanish %victim%"
+		"{@logs}" is "true":
+			log "%victim% stracil niewidzialnosc z komendy /vanish" to "PremiumItems-vanished.log"
+	stop
+on join:
+	{preitem.kosa_%player%::invisibility} is set
+	wait 5 seconds
+	set {_time} to difference between {preitem.kosa_%player%::invisibility} and now
+	{_time} >= 30 seconds
+	clear {preitem.kosa_%player%::invisibility}
+	execute console command "vanish %player%"
+	"{@logs}" is "true":
+		log "%player% stracil niewidzialnosc z komendy /vanish" to "PremiumItems-vanished.log"
+	stop
+on death of player:
+	{preitem.kosa-saveeq_%player%::*} is set
+	loop {preitem.kosa-saveeq_%player%::*}:
+		remove loop-value from drops
+	set {_num} to 0
+	loop 40 times:
+		set {preitem.kosa-savedeq_%player%::%{_num}%} to {preitem.kosa-saveeq_%player%::%{_num}%}
+		add 1 to {_num}
+	clear {preitem.kosa-saveeq_%player%::*}
+	set {preitem.kosa_%player%::deadloc} to location of player
+	wait 1 minute
+	clear {preitem.kosa_%player%::deadloc}
+	clear {preitem.kosa-savedeq_%player%::*}
+	stop
+on respawn:
+	{preitem.kosa_%player%::deadloc} is set
+	set {_num} to 0
+	loop 40 times:
+		set slot {_num} of player to {preitem.kosa-savedeq_%player%::%{_num}%}
+		add 1 to {_num}
+	send "&4&l[&cPreKosa&4&l]&6&l DRUGA SZANSA!"
+	wait 1 second
+	teleport player to {preitem.kosa_%player%::deadloc}
+	clear {preitem.kosa-savedeq_%player%::*}
+	clear {preitem.kosa_%player%::deadloc}
+	stop
+	
+	
+	#MIECZ
+
+on damage:
+	attacker and victim is player
+	"%attacker's tool%" is "diamond sword of Infinity 69 named ""&b&lThe Creeper Legend""":
+		set {preitem.miecz_%attacker%::victim} to victim
+		set {preitem.ofiara_miecz.%victim%} to attacker
+		add 1 to {preitem.miecz_%attacker%::hit_given}
+		
+		{preitem.miecz_%attacker%::diaxvictim} is not set:
+			victim has diamond helmet and chestplate and leggings and boots
+			set {preitem.miecz_%attacker%::diaxvictim} to victim
+			wait 5 seconds
+			clear {preitem.miecz_%attacker%::diaxvictim}
+		{preitem.miecz_%attacker%::superdmg} is true:
+			damage victim by 1.80 hearts
+			strike lightning at location of victim
+			clear {preitem.miecz_%attacker%::superdmg}
+		{preitem.miecz_%attacker%::hit_given} >= 20:
+			clear {preitem.miecz_%attacker%::hit_given}
+			chance of 30%:
+				push victim in attacker's direction at speed 6
+		wait 15 seconds
+		clear {preitem.ofiara_miecz.%victim%}
+		{preitem.miecz_%attacker%::victim} is victim
+		clear {preitem.miecz_%attacker%::victim}
+		stop
+	victim has diamond sword of Infinity 69
+	add 1 to {preitem.miecz_%victim%::hit_taken}
+	{preitem.miecz_%victim%::hit_taken} >= 10:
+		clear {preitem.miecz_%victim%::hit_taken}
+		apply strength 1 to victim for 5 seconds
+	victim's health <= 5:
+		chance of 5%
+		set {preitem.miecz_%victim%::ucieczka} to true
+		send "&4&l[&cPreMiecz&4&l]&9 Czy chcesz aktywowac tryb ucieczki? Szybko! Kliknij prawym myszy trzymajac miecz!" to victim
+		wait 30 seconds
+		clear {preitem.miecz_%victim%::ucieczka}
+	stop
+	
+on death of player:
+	{preitem.miecz_%{preitem.ofiara_miecz.%player%}%::diaxvictim} is player:
+		apply absorption 5 to {preitem.ofiara_miecz.%player%} for 1 minute
+		clear {preitem.ofiara_miecz.%player%}
+	player has diamond sword of Infinity 69:
+		clear {preitem.miecz_%player%::ucieczka}
+		loop all entities in radius 6 around location of player:
+			loop-entity is not player
+			ignite loop-entity for 30 seconds
+			apply nausea to loop-entity for 15 seconds
+	{preitem.miecz_%{preitem.ofiara_miecz.%player%}%::victim} is player:
+		add 1 to {preitem.miecz_%{preitem.ofiara_miecz.%player%}%::zabici}
+		{preitem.miecz_%{preitem.ofiara_miecz.%player%}%::zabici} >= 3
+		set {preitem.miecz_%{preitem.ofiara_miecz.%player%}%::superdmg} to true
+		clear {preitem.miecz_%{preitem.ofiara_miecz.%player%}%::zabici}
+	stop
+
+on rightclick with diamond sword of Infinity 69:
+	{preitem.miecz_%player%::ucieczka} is true
+	apply speed 10 to player for 6 seconds
+	apply regeneration 200 to player for 8 seconds
+	clear {preitem.miecz_%player%::ucieczka}
+	stop
+	
+	
+#Dodatki:
+
+	#KASK GORNICZY:
+on inventory click:
+	clicked slot is 39
+	wait 1 tick
+	slot 39 of player is glowing iron helmet named "&dKask gorniczy":
+		set {preitem.kask_gorniczy.%player%} to true
+		stop
+	set {preitem.kask_gorniczy.%player%} to false
+	set block at {preitem.kask_gorniczy-cord.%player%} to fence
+	set block at {preitem.kask_gorniczy-cord.%player%} to air
+	stop
+on rightclick with iron helmet:
+	player's tool is glowing iron helmet named "&dKask gorniczy"
+	set {preitem.kask_gorniczy.%player%} to true
+	stop
+on death of player:
+	{preitem.kask_gorniczy.%player%} is true
+	clear {preitem.kask_gorniczy.%player%}
+	stop
+on disconnect:
+	{preitem.kask_gorniczy.%player%} is true
+	clear {preitem.kask_gorniczy.%player%}
+	stop
+
+on walk on stone or gravel or dirt or mossy cobble or cobblestone or bedrock:
+	y coord of player <= 65
+	{preitem.kask_gorniczy.%player%} is true
+	block at location of player is air
+	block below block at location of player is not air
+	{preitem.kask_gorniczy-cord.%player%} is location of player:
+		stop
+	block below block at location of player is not targeted block of player
+	{preitem.kask_gorniczy-cord.%player%} is set:
+		set block at {preitem.kask_gorniczy-cord.%player%} to fence
+		set block at {preitem.kask_gorniczy-cord.%player%} to air
+	set {preitem.kask_gorniczy-cord.%player%} to location of player
+	set {_loc} to location of player
+	make player see block at {preitem.kask_gorniczy-cord.%player%} as torch
+	stop
+	
+	#KAPALA:
+
+on death of player:
+	{preitem.kapala.%{preitem.ofiara_kapala.%player%}%::victim} is player:
+		add 1 to {preitem.kapala.%{preitem.ofiara_kapala.%player%}%::zabici}
+		clear {preitem.ofiara_kapala.%player%}
+	player has skeleton head of Infinity 69
+	remove glowing skeleton head named "&dKapala" from drops
+	set {preitem.kapala.%player%::zabici} to 0
+	set {preitem.kapala.%player%::dead} to true
+	{preitem.kapala.%player%::wskrzesz} is true:
+		set {preitem.kapala.%player%::wskrzesz} to location of player
+	stop
+on respawn:
+	{preitem.kapala.%player%::dead} is true
+	clear {preitem.kapala.%player%::dead}
+	add glowing skeleton head named "&dKapala" with lore "&5Nakarm mnie krwia wrogow, a dam Ci zycie wieczne!||&8UWAGA! Posiadajac kapale bijesz sie slabiej!" to player's inventory
+	{preitem.kapala.%player%::wskrzesz} is set:
+		send "&4&l[&cKapala&4&l] &6Wracamy do gry..."
+		wait 1 second
+		teleport player to {preitem.kapala.%player%::wskrzesz}
+		clear {preitem.kapala.%player%::wskrzesz}
+		stop
+	send "&eO nie!&6 Krew z kapali wylala sie!"
+	stop
+on damage:
+	attacker and victim is player
+	attacker has skeleton head of Infinity 69
+	set {preitem.kapala.%attacker%::victim} to victim
+	set {preitem.ofiara_kapala.%victim%} to attacker
+	wait 4 seconds
+	clear {preitem.ofiara_kapala.%victim%}
+	{preitem.kapala.%attacker%::wskrzesz} is victim
+	clear {preitem.kapala.%attacker%::wskrzesz}
+	stop
+	
+on click with skeleton head:
+	player's tool is skeleton head of Infinity 69
+	cancel event
+	{preitem.kapala.%player%::zabici} < {@kapala_ilosc_zabic_potrzebna_do_wskrzeszenia}:
+		send "&4&l[&cKapala&4&l]&6 Czaszka nie jest jeszcze pelna... (%{preitem.kapala.%player%::zabici}%/{@kapala_ilosc_zabic_potrzebna_do_wskrzeszenia} zabic)"
+		stop
+	send "&4&l[&cKapala&4&l]&6 Teraz gdy zginiesz, wrocisz na pole walki nowo narodzony."
+	set {preitem.kapala.%player%::wskrzesz} to true
+	stop
+on drop skeleton head of Infinity 69:
+	cancel event
+	stop
