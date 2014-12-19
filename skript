@@ -61,7 +61,7 @@ command /premiumitems [<text>] [<text>] [<offline player>]:
 			stop
 		arg 1 is "update":
 			execute console command "skript disable %script%"
-			download "xxx" to "plugins/Skript/scripts/%script%"
+			download "https://raw.githubusercontent.com/Nizaxx/-SK-PremiumItems/master/skript" to "plugins/Skript/scripts/%script%"
 			send "&4[PremiumItems]&a Zaktualizowano."
 			stop
 		arg 1 is "give":
