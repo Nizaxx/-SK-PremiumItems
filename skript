@@ -11,9 +11,9 @@ on load:
 	stop
 
 options:
-	czas_wydania_po_smierci: 10 seconds	#3 hours
-	czas_wydania_po_naprawie: 1 minute	#1 hour
-	czas_chowania_preitemu: 1 seconds	#15 seconds
+	czas_wydania_po_smierci: 3 hours
+	czas_wydania_po_naprawie: 1 hour
+	czas_chowania_preitemu: 15 seconds
 	kapala_ilosc_zabic_potrzebna_do_wskrzeszenia: 30
 	
 	
