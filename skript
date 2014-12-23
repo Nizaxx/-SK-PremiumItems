@@ -939,6 +939,7 @@ on damage:
 	chance of 5%:
 		set {preitem.kosa_%victim%::invisibility} to now
 		execute console command "vanish %victim%"
+		execute console command "fly %victim%"
 		"{@logs}" is "true":
 			log "%victim% otrzymal niewidzialnosc z komendy /vanish przy pomocy ""Kosy Smierci""" to "PremiumItems-vanished.log"
 		send "&4&l[&cPreKosa&4&l]&6 Niewidzialnosc + niesmiertelnosc na 40 sekund!" to victim
@@ -946,6 +947,7 @@ on damage:
 		victim is online
 		clear {preitem.kosa_%victim%::invisibility}
 		execute console command "vanish %victim%"
+		execute console command "fly %victim%"
 		"{@logs}" is "true":
 			log "%victim% stracil niewidzialnosc z komendy /vanish" to "PremiumItems-vanished.log"
 	stop
@@ -956,6 +958,7 @@ on join:
 	{_time} >= 30 seconds
 	clear {preitem.kosa_%player%::invisibility}
 	execute console command "vanish %player%"
+	execute console command "fly %player%"
 	"{@logs}" is "true":
 		log "%player% stracil niewidzialnosc z komendy /vanish" to "PremiumItems-vanished.log"
 	stop
