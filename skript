@@ -11,9 +11,9 @@ on load:
 	stop
 
 options:
-	czas_wydania_po_smierci: 3 hours
-	czas_wydania_po_naprawie: 1 hour
-	czas_chowania_preitemu: 15 seconds
+	czas_wydania_po_smierci: 10 seconds	#3 hours
+	czas_wydania_po_naprawie: 1 minute	#1 hour
+	czas_chowania_preitemu: 1 seconds	#15 seconds
 	kapala_ilosc_zabic_potrzebna_do_wskrzeszenia: 30
 	
 	
@@ -57,14 +57,13 @@ command /premiumitems [<text>] [<text>] [<offline player>]:
 			send "&e&l========================"
 			stop
 		arg 1 is not set:
-			send "&4[PremiumItems]&c Komenda nie pelna - /preitem <give;take;info>"
+			send "&4[PremiumItems]&c Komenda nie pelna - /preitem <give;take;update;info>"
 			stop
 		arg 1 is "update":
 			set {_online} to result of connect to "https://raw.githubusercontent.com/Nizaxx/-SK-PremiumItems/master/version"
 			"{@wersja}" is "%{_online}%":
 				send "&4[PremiumItems]&a Skrypt juz posiada najnowsza wersje!"
 				stop
-			execute console command "skript disable %script%"
 			download "https://raw.githubusercontent.com/Nizaxx/-SK-PremiumItems/master/skript" to "plugins/Skript/scripts/%script%.sk"
 			send "&4[PremiumItems]&a Zaktualizowano."
 			stop
@@ -221,6 +220,9 @@ command /premiumitems [<text>] [<text>] [<offline player>]:
 				remove "item" from {preitem.magazynek_%arg-3%::kosa::*}
 				remove "status" from {preitem.magazynek_%arg-3%::kosa::*}
 				remove "kosa" from {preitem.magazynek_%arg-3%::*}
+				remove "hitdmg" from {preitem.kosa_%arg-3%::*}
+				remove "deadloc" from {preitem.kosa_%arg-3%::*}
+				remove "invisibility" from {preitem.kosa_%arg-3%::*}
 				send "&4[PremiumItems]&a Komenda zostala wykonana pomyslnie."
 				arg-3 is online:
 					remove golden hoe of Infinity 69 from arg-3's inventory
@@ -238,6 +240,13 @@ command /premiumitems [<text>] [<text>] [<offline player>]:
 				remove "item" from {preitem.magazynek_%arg-3%::miecz::*}
 				remove "status" from {preitem.magazynek_%arg-3%::miecz::*}
 				remove "miecz" from {preitem.magazynek_%arg-3%::*}
+				remove "victim" from {preitem.miecz_%arg-3%::*}
+				remove "zabici" from {preitem.miecz_%arg-3%::*}
+				remove "superdmg" from {preitem.miecz_%arg-3%::*}
+				remove "diaxvictim" from {preitem.miecz_%arg-3%::*}
+				remove "ucieczka" from {preitem.miecz_%arg-3%::*}
+				remove "hit_given" from {preitem.miecz_%arg-3%::*}
+				remove "hit_taken" from {preitem.miecz_%arg-3%::*}
 				send "&4[PremiumItems]&a Komenda zostala wykonana pomyslnie."
 				arg-3 is online:
 					remove diamond sword of Infinity 69 from arg-3's inventory
@@ -673,7 +682,7 @@ on close inventory:
 	stop
 
 on login:
-	wait 5 seconds
+	wait 5 ticks
 	loop {preitem.take_%player%::*}:
 		remove loop-value from player's inventory
 		remove loop-value from {preitem.take_%player%::*}
